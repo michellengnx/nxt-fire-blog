@@ -5,7 +5,6 @@ import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
   const userData = useUserData();
-  console.log(userData);
   return (
     <>
       <UserContextData.Provider value={userData}>

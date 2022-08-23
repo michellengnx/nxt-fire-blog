@@ -3,7 +3,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect, useState } from "react";
 
 export function useUserData() {
-  const [user] = useAuthState(auth);
+  const [user] = useAuthState(auth as any);
   // initialized a username
   const [username, setUsername] = useState(null);
 

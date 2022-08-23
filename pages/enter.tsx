@@ -6,9 +6,6 @@ import debounce from "../utils/debounce";
 
 export default function Enter({}) {
   const { user, username } = useContext(UserContextData);
-  console.log("in Enter page");
-
-  console.log(user, username);
   return (
     <main>
       {user ? (
@@ -47,6 +44,7 @@ export default function Enter({}) {
     );
   }
   function UsernameForm({}) {
+    const { user, username } = useContext(UserContextData);
     const [formValue, setFormValue] = useState(null);
     const [isValid, setIsValid] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -69,6 +67,7 @@ export default function Enter({}) {
       }
     };
     const onSubmit = async (e) => {
+      e.preventDefault();
       const userDoc = firestore.doc(`users/${user.uid}`);
       const usernameDoc = firestore.doc(`usernames/${formValue}`);
       const batch = firestore.batch();
@@ -88,8 +87,10 @@ export default function Enter({}) {
 
     const checkUsername = useCallback(
       debounce(async (username: String) => {
+        console.log("in check username");
+        console.log(username);
         if (username && username.length >= 3) {
-          const ref = firestore.doc(`doc/${username}`);
+          const ref = firestore.doc(`usernames/${username}`);
           const { exists } = await ref.get();
           console.log("firestore read executed");
           setIsValid(!exists);
@@ -99,30 +100,27 @@ export default function Enter({}) {
       []
     );
     return (
-      <section>
-        <h3>Choose a username</h3>
-        <form>
-          <input
-            name="username"
-            placeholder="Username"
-            value={formValue}
-            onChange={onChange}
-          />
-          <UsernameValidationMessage
-            username={formValue}
-            isValid={isValid}
-            loading={loading}
-          />
-          <button
-            className="btn-green"
-            type="submit"
-            disabled={!isValid}
-            onSubmit={onSubmit}
-          >
-            Choose this name
-          </button>
-        </form>
-      </section>
+      !username && (
+        <section>
+          <h3>Choose a username</h3>
+          <form onSubmit={onSubmit}>
+            <input
+              name="username"
+              placeholder="Username"
+              value={formValue}
+              onChange={onChange}
+            />
+            <UsernameValidationMessage
+              username={formValue}
+              isValid={isValid}
+              loading={loading}
+            />
+            <button className="btn-green" type="submit" disabled={!isValid}>
+              Choose this name
+            </button>
+          </form>
+        </section>
+      )
     );
   }
   function UsernameValidationMessage({ username, isValid, loading }) {
